@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Virtual Letters — For My Love 💌</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&family=Montagu+Slab:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#fff6fb;
+      --card:#fff;
+      --accent:#ff7aa2;
+      --muted:#9a6b88;
+      --shadow: 0 8px 24px rgba(154,107,136,0.12);
+      --glass: rgba(255,255,255,0.6);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Comfortaa, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1000px 600px at 10% 10%, #fff0f6 0%, transparent 10%),
+                  radial-gradient(900px 500px at 90% 90%, #fff7ec 0%, transparent 10%),
+                  var(--bg);
+      color:#3b2b33;
+      -webkit-font-smoothing:antialiased;
+      display:flex; align-items:center; justify-content:center; padding:32px;
+    }
+    .app{
+      width:100%; max-width:980px; background:linear-gradient(180deg,var(--card),#fffefa); border-radius:20px; box-shadow:var(--shadow); padding:28px;
+      position:relative; overflow:hidden;
+    }
+    header{display:flex; gap:16px; align-items:center;}
+    .logo{display:flex; gap:12px; align-items:center}
+    .logo .heart{width:56px; height:56px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#ffd1e6); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(255,122,162,0.24)}
+    .logo svg{width:30px; height:30px}
+    h1{font-size:20px; margin:0; font-weight:700}
+    p.lead{margin:0; color:var(--muted); font-size:13px}
+
+    .controls{display:flex; gap:12px; margin-left:auto}
+    .btn{background:var(--accent); color:white; border:none; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700; box-shadow:0 6px 16px rgba(255,122,162,0.18)}
+    .btn.ghost{background:transparent; color:var(--accent); box-shadow:none; border:1px solid rgba(255,122,162,0.12)}
+
+    main{display:grid; grid-template-columns: 1fr 360px; gap:20px; margin-top:20px}
+
+    /* left: envelopes grid */
+    .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:18px}
+    .envelope{background:linear-gradient(180deg,#fff,#fff5fb); border-radius:14px; padding:18px; box-shadow:0 10px 30px rgba(169,106,136,0.08); cursor:pointer; position:relative; overflow:hidden}
+    .env-top{height:60px; background:linear-gradient(135deg,#ffdce8,#fff); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#7b465c}
+    .env-sub{font-size:12px; color:var(--muted); margin-top:8px}
+    .new-badge{position:absolute; top:10px; right:10px; background:var(--accent); color:white; padding:6px 8px; border-radius:999px; font-size:12px}
+
+    /* right: preview and compose */
+    .panel{background:var(--glass); border-radius:14px; padding:16px}
+    .panel h3{margin:0 0 8px 0}
+    .letter-screen{height:300px; border-radius:10px; padding:18px; background:linear-gradient(180deg,#fff,#fffefc); box-shadow:inset 0 2px 0 rgba(255,255,255,0.6); overflow:auto; position:relative}
+    .placeholder{color:var(--muted); font-size:14px}
+
+    .compose{display:flex; flex-direction:column; gap:10px; margin-top:12px}
+    .input, textarea{width:100%; padding:10px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); font-family:inherit}
+    textarea{min-height:96px; resize:vertical}
+
+    footer{margin-top:18px; display:flex; gap:10px; justify-content:flex-end}
+
+    /* modal for reading letter */
+    .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(10,8,12,0.45); z-index:40}
+    .modal.show{display:flex}
+    .card{width:92%; max-width:720px; background:white; border-radius:16px; padding:22px; box-shadow:0 30px 80px rgba(0,0,0,0.24); position:relative}
+    .close{position:absolute; right:12px; top:12px; border:none; background:transparent; cursor:pointer; font-size:20px}
+
+    .typing{font-family:Montagu Slab, Georgia, serif; font-size:18px; line-height:1.6; color:#3b2b33}
+
+    /* cute confetti hearts */
+    canvas.confetti{position:fixed; left:0; top:0; pointer-events:none; z-index:30}
+
+    /* responsive */
+    @media (max-width:880px){main{grid-template-columns:1fr;}.controls{margin-top:12px;}}
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <header>
+      <div class="logo">
+        <div class="heart" aria-hidden>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20s-7-4.8-9.6-8.3C-0.2 6.6 4 2 7.9 4.9 9.7 6 12 8 12 8s2.3-2 4.1-3.1C20 2 24.2 6.6 21.6 11.7 19 16.2 12 20 12 20z" fill="white" opacity="0.95"/></svg>
+        </div>
+        <div>
+          <h1>Letters for <span id="loverName">My Love</span> 💌</h1>
+          <p class="lead">A tiny private place to give love notes, surprises, and smiles.</p>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn ghost" id="themeBtn">Surprise ✨</button>
+        <button class="btn" id="composeBtn">Write a letter</button>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+          <h2 style="margin:0">Envelopes</h2>
+          <small class="placeholder">Click an envelope to open</small>
+        </div>
+        <div class="grid" id="envelopeGrid" aria-live="polite"></div>
+      </section>
+
+      <aside class="panel">
+        <h3>Preview</h3>
+        <div class="letter-screen" id="preview">
+          <div class="placeholder">Select an envelope to read the letter here — or compose a new one!</div>
+        </div>
+
+        <div class="compose">
+          <input class="input" id="titleInput" placeholder="Title (e.g. 'For you, always')">
+          <textarea id="bodyInput" placeholder="Write your letter... (it will be saved locally)"></textarea>
+          <div style="display:flex; gap:8px;">
+            <button class="btn" id="saveBtn">Save letter</button>
+            <button class="btn ghost" id="clearBtn">Clear all</button>
+          </div>
+        </div>
+        <footer>
+          <small class="placeholder">Private on this device. Want it online? I can help deploy.</small>
+        </footer>
+      </aside>
+    </main>
+  </div>
+
+  <!-- modal -->
+  <div class="modal" id="modal">
+    <div class="card" role="dialog" aria-modal="true">
+      <button class="close" id="closeModal">×</button>
+      <h2 id="modalTitle">Letter</h2>
+      <div style="margin-top:12px" class="typing" id="modalBody" aria-live="polite"></div>
+      <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px">
+        <button class="btn ghost" id="downloadBtn">Download</button>
+        <button class="btn" id="shareBtn">Share by email</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas class="confetti" id="confettiCanvas"></canvas>
+
+  <script>
+    // Data storage key
+    const STORAGE_KEY = 'vletters_v1';
+
+    // Helpers
+    function uid(){ return Math.random().toString(36).slice(2,9) }
+
+    // Initial sample letters
+    const defaultLetters = [
+      {id: uid(), title:'First hello', body:"Hey you —\n\nI made this little place to send tiny surprises. Every letter is a hug typed down. I hope it makes you smile today.\n\nLove, always.", created:Date.now()},
+      {id: uid(), title:'A tiny promise', body:"I promise to listen, to laugh with you, and to learn the small things that make your day better. Let's collect good mornings and cozy nights.", created:Date.now()}
+    ];
+
+    // load / save
+    function loadLetters(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return defaultLetters.slice();
+        return JSON.parse(raw);
+      }catch(e){console.warn(e); return defaultLetters.slice();}
+    }
+    function saveLetters(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)) }
+
+    // render
+    const grid = document.getElementById('envelopeGrid');
+    const preview = document.getElementById('preview');
+    let letters = loadLetters();
+
+    function renderGrid(){
+      grid.innerHTML = '';
+      if(letters.length===0){ grid.innerHTML = '<div class="placeholder">No letters yet — write the first one!</div>'; return }
+      letters.slice().reverse().forEach(l => {
+        const el = document.createElement('div'); el.className='envelope'; el.tabIndex=0;
+        el.innerHTML = `<div class="env-top">${escapeHtml(l.title||'Untitled')}</div><div class="env-sub">${new Date(l.created).toLocaleString()}</div>`;
+        const badge = document.createElement('div'); badge.className='new-badge'; badge.textContent='open'; el.appendChild(badge);
+        el.addEventListener('click', ()=>openLetter(l.id));
+        el.addEventListener('keydown', (e)=>{ if(e.key==='Enter') openLetter(l.id) });
+        grid.appendChild(el);
+      })
+    }
+
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+    function showPreview(letter){
+      preview.innerHTML = '';
+      const wrap = document.createElement('div');
+      wrap.style.padding='8px';
+      wrap.innerHTML = `<strong style="font-size:15px">${escapeHtml(letter.title)}</strong><div style="height:8px"></div><div style="white-space:pre-wrap; color:#5b3f4a">${escapeHtml(letter.body)}</div>`;
+      preview.appendChild(wrap);
+    }
+
+    function openLetter(id){
+      const letter = letters.find(x=>x.id===id);
+      if(!letter) return;
+      const modal = document.getElementById('modal');
+      document.getElementById('modalTitle').textContent = letter.title || 'Letter';
+      const bodyEl = document.getElementById('modalBody'); bodyEl.textContent='';
+      modal.classList.add('show');
+      typewriter(letter.body, bodyEl, 8, ()=>{ burstHearts(30) });
+      // set share/download handlers
+      document.getElementById('downloadBtn').onclick = ()=>downloadText(letter.title+'.txt', letter.body);
+      document.getElementById('shareBtn').onclick = ()=>{
+        const subj = encodeURIComponent(letter.title || 'A letter for you');
+        const body = encodeURIComponent(letter.body + '\n\n— sent from our little letters app');
+        window.location.href = `mailto:?subject=${subj}&body=${body}`;
+      }
+    }
+
+    // simple typewriter
+    function typewriter(text, container, speed=12, done){
+      let i=0; container.textContent='';
+      function step(){
+        if(i>text.length-1){ if(done) done(); return; }
+        container.textContent += text[i]==='\n' ? '\n' : text[i];
+        i++; setTimeout(step, speed + Math.random()*speed);
+      }
+      step();
+    }
+
+    // confetti hearts
+    const canvas = document.getElementById('confettiCanvas');
+    const ctx = canvas.getContext('2d');
+    let W=0,H=0, particles=[];
+    function resize(){ W=canvas.width = window.innerWidth; H=canvas.height = window.innerHeight }
+    window.addEventListener('resize', resize); resize();
+
+    function burstHearts(count){
+      for(let i=0;i<count;i++){
+        particles.push({x:Math.random()*W, y:Math.random()*H*0.6, vx:(Math.random()-0.5)*6, vy: -Math.random()*6-2, size:6+Math.random()*10, life:60+Math.random()*40, hue:320+Math.random()*40});
+      }
+      if(!running) run();
+    }
+    let running=false;
+    function run(){ running=true; function loop(){ ctx.clearRect(0,0,W,H); for(let p of particles){ p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life--; drawHeart(p.x,p.y,p.size,p.hue); } particles = particles.filter(p=>p.life>0); if(particles.length>0) requestAnimationFrame(loop); else running=false } loop() }
+
+    function drawHeart(x,y,s,h){ ctx.save(); ctx.translate(x,y); ctx.beginPath(); const topCurveHeight = s * 0.3; ctx.moveTo(0, topCurveHeight); ctx.bezierCurveTo(0, topCurveHeight - s/2, -s, topCurveHeight - s/2, -s, topCurveHeight); ctx.bezierCurveTo(-s, topCurveHeight + s/1.8, 0, topCurveHeight + s, 0, topCurveHeight + s*1.4); ctx.bezierCurveTo(0, topCurveHeight + s, s, topCurveHeight + s/1.8, s, topCurveHeight); ctx.bezierCurveTo(s, topCurveHeight - s/2, 0, topCurveHeight - s/2, 0, topCurveHeight); ctx.closePath(); ctx.fillStyle = `hsl(${h}deg 100% 68%)`; ctx.fill(); ctx.restore(); }
+
+    // UI bindings
+    document.getElementById('composeBtn').addEventListener('click', ()=>document.getElementById('titleInput').focus());
+    document.getElementById('saveBtn').addEventListener('click', ()=>{
+      const t = document.getElementById('titleInput').value.trim();
+      const b = document.getElementById('bodyInput').value.trim();
+      if(!b){ alert('Write something sweet first 💌'); return }
+      const item = {id:uid(), title:t||'Untitled', body:b, created:Date.now()};
+      letters.push(item); saveLetters(letters); renderGrid(); document.getElementById('titleInput').value=''; document.getElementById('bodyInput').value=''; showPreview(item);
+      burstHearts(18);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', ()=>{
+      if(!confirm('Clear all letters from this device? This cannot be undone.')) return;
+      letters = []; saveLetters(letters); renderGrid(); preview.innerHTML='<div class="placeholder">No letters yet — write the first one!</div>';
+    });
+
+    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') closeModal() });
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+    function downloadText(filename, text){ const blob = new Blob([text], {type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
+
+    // theme surprise
+    document.getElementById('themeBtn').addEventListener('click', ()=>{
+      document.body.animate([{filter:'hue-rotate(0deg)'},{filter:'hue-rotate(360deg)'}],{duration:900,iterations:1});
+      document.getElementById('loverName').textContent = prompt('What should the header call your love?', 'Sunshine') || 'My Love';
+    })
+
+    // boot
+    renderGrid();
+
+    // small accessibility: keyboard shortcut N to compose
+    window.addEventListener('keydown', (e)=>{ if(e.key==='n' && !e.metaKey && !e.ctrlKey){ document.getElementById('titleInput').focus() } });
+
+    // expose for debugging
+    window._vletters = {loadLetters, saveLetters, letters};
+  </script>
+</body>
+</html>
