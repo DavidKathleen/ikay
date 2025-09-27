@@ -3,8 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Virtual Letters — For My Love 💌</title>
-  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&family=Montagu+Slab:wght@400;600&display=swap" rel="stylesheet">
+  <title>For My Love 💌</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;700&family=Montagu+Slab:wght@400;600&family=Caveat:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg:#fff6fb;
@@ -14,6 +16,7 @@
       --shadow: 0 8px 24px rgba(154,107,136,0.12);
       --glass: rgba(255,255,255,0.6);
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -25,10 +28,12 @@
       -webkit-font-smoothing:antialiased;
       display:flex; align-items:center; justify-content:center; padding:32px;
     }
+
     .app{
       width:100%; max-width:980px; background:linear-gradient(180deg,var(--card),#fffefa); border-radius:20px; box-shadow:var(--shadow); padding:28px;
       position:relative; overflow:hidden;
     }
+
     header{display:flex; gap:16px; align-items:center;}
     .logo{display:flex; gap:12px; align-items:center}
     .logo .heart{width:56px; height:56px; border-radius:12px; background:linear-gradient(135deg,var(--accent),#ffd1e6); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(255,122,162,0.24)}
@@ -42,14 +47,39 @@
 
     main{display:grid; grid-template-columns: 1fr 360px; gap:20px; margin-top:20px}
 
-    /* left: envelopes grid */
+    .env-top {
+  min-height: 60px;
+  background: linear-gradient(135deg, #ffdce8, #fff);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #3b2b33;
+  font-family: 'Merriweather', Georgia, serif;
+  font-size: 15px;
+  text-align: center;
+  padding: 6px;
+  word-wrap: break-word;       
+  overflow: hidden;           
+  text-overflow: ellipsis;     
+  display: -webkit-box;        
+  -webkit-line-clamp: 2;       
+  -webkit-box-orient: vertical;
+}
+
+    .env-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-family: 'Merriweather', Georgia, serif;
+      font-style: italic;
+    }
+
     .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:18px}
     .envelope{background:linear-gradient(180deg,#fff,#fff5fb); border-radius:14px; padding:18px; box-shadow:0 10px 30px rgba(169,106,136,0.08); cursor:pointer; position:relative; overflow:hidden}
-    .env-top{height:60px; background:linear-gradient(135deg,#ffdce8,#fff); border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#7b465c}
-    .env-sub{font-size:12px; color:var(--muted); margin-top:8px}
     .new-badge{position:absolute; top:10px; right:10px; background:var(--accent); color:white; padding:6px 8px; border-radius:999px; font-size:12px}
 
-    /* right: preview and compose */
     .panel{background:var(--glass); border-radius:14px; padding:16px}
     .panel h3{margin:0 0 8px 0}
     .letter-screen{height:300px; border-radius:10px; padding:18px; background:linear-gradient(180deg,#fff,#fffefc); box-shadow:inset 0 2px 0 rgba(255,255,255,0.6); overflow:auto; position:relative}
@@ -59,20 +89,33 @@
     .input, textarea{width:100%; padding:10px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); font-family:inherit}
     textarea{min-height:96px; resize:vertical}
 
-    footer{margin-top:18px; display:flex; gap:10px; justify-content:flex-end}
-
-    /* modal for reading letter */
     .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(10,8,12,0.45); z-index:40}
     .modal.show{display:flex}
     .card{width:92%; max-width:720px; background:white; border-radius:16px; padding:22px; box-shadow:0 30px 80px rgba(0,0,0,0.24); position:relative}
     .close{position:absolute; right:12px; top:12px; border:none; background:transparent; cursor:pointer; font-size:20px}
 
-    .typing{font-family:Montagu Slab, Georgia, serif; font-size:18px; line-height:1.6; color:#3b2b33}
+    .typing{font-family:'Times New Roman', Times, serif; font-size:18px; line-height:1.7; color:#3b2b33; white-space:pre-wrap}
 
-    /* cute confetti hearts */
     canvas.confetti{position:fixed; left:0; top:0; pointer-events:none; z-index:30}
 
-    /* responsive */
+    .music-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #ff8fa3;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 25px;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      transition: background 0.3s;
+      z-index: 50;
+    }
+    .music-btn:hover { background: #ff5d80; }
+
     @media (max-width:880px){main{grid-template-columns:1fr;}.controls{margin-top:12px;}}
   </style>
 </head>
@@ -81,15 +124,16 @@
     <header>
       <div class="logo">
         <div class="heart" aria-hidden>
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 20s-7-4.8-9.6-8.3C-0.2 6.6 4 2 7.9 4.9 9.7 6 12 8 12 8s2.3-2 4.1-3.1C20 2 24.2 6.6 21.6 11.7 19 16.2 12 20 12 20z" fill="white" opacity="0.95"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.8-9.6-8.3C-0.2 6.6 4 2 7.9 4.9 9.7 6 12 8 12 8s2.3-2 4.1-3.1C20 2 24.2 6.6 21.6 11.7 19 16.2 12 20 12 20z" fill="white" opacity="0.95"/></svg>
         </div>
         <div>
-          <h1>Letters for <span id="loverName">My Love</span> 💌</h1>
-          <p class="lead">A tiny private place to give love notes, surprises, and smiles.</p>
+          <h1>A Love Mailbox for <span id="loverName">My Ikay</span> 💌</h1>
+          <p class="lead">A little universe where my heart whispers to you, Ikay.</p>
         </div>
       </div>
+
       <div class="controls">
-        <button class="btn ghost" id="themeBtn">Surprise ✨</button>
+        <button class="btn ghost" id="themeBtn">click me ✨</button>
         <button class="btn" id="composeBtn">Write a letter</button>
       </div>
     </header>
@@ -110,26 +154,27 @@
         </div>
 
         <div class="compose">
-          <input class="input" id="titleInput" placeholder="Title (e.g. 'For you, always')">
-          <textarea id="bodyInput" placeholder="Write your letter... (it will be saved locally)"></textarea>
+          <input class="input" id="titleInput" placeholder="Title">
+          <textarea id="bodyInput" placeholder="Write your letter..."></textarea>
           <div style="display:flex; gap:8px;">
             <button class="btn" id="saveBtn">Save letter</button>
             <button class="btn ghost" id="clearBtn">Clear all</button>
           </div>
         </div>
-        <footer>
-          <small class="placeholder">Private on this device. Want it online? I can help deploy.</small>
+        <footer style="margin-top:12px">
+          <small class="placeholder">Private on this device. Letters stay here forever hehe 💖.</small>
         </footer>
       </aside>
     </main>
   </div>
 
-  <!-- modal -->
-  <div class="modal" id="modal">
-    <div class="card" role="dialog" aria-modal="true">
+ 
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="card">
       <button class="close" id="closeModal">×</button>
       <h2 id="modalTitle">Letter</h2>
-      <div style="margin-top:12px" class="typing" id="modalBody" aria-live="polite"></div>
+      <div id="modalBody" class="typing" aria-live="polite"></div>
+
       <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px">
         <button class="btn ghost" id="downloadBtn">Download</button>
         <button class="btn" id="shareBtn">Share by email</button>
@@ -139,45 +184,76 @@
 
   <canvas class="confetti" id="confettiCanvas"></canvas>
 
-  <script>
-    // Data storage key
-    const STORAGE_KEY = 'vletters_v1';
 
-    // Helpers
+  <audio id="bg-music" loop>
+    <source src="Synesthesia.mp3" type="audio/mpeg">
+  </audio>
+  <button id="music-toggle" class="music-btn">🎵 Play Music</button>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    
+    emailjs.init("11Smvc4qm3mXm_sEB"); 
+  </script>
+
+  <script>
+    
+    const STORAGE_KEY = 'vletters_v1';
     function uid(){ return Math.random().toString(36).slice(2,9) }
 
-    // Initial sample letters
     const defaultLetters = [
-      {id: uid(), title:'First hello', body:"Hey you —\n\nI made this little place to send tiny surprises. Every letter is a hug typed down. I hope it makes you smile today.\n\nLove, always.", created:Date.now()},
-      {id: uid(), title:'A tiny promise', body:"I promise to listen, to laugh with you, and to learn the small things that make your day better. Let's collect good mornings and cozy nights.", created:Date.now()}
-    ];
+  {id: uid(), title:'I Love You When You Shy But Smile Anyway', body:"That shy smile of yours is a secret language only i get to read. It tells me you’re letting me in, showing me a side of you that’s soft and unguarded. it’s like my favorite movie scene happening in real life. You don’t even know how cute you are in that moment. i love you when you’re confident, when you’re silly, when you’re serious… but I especially love you when you’re shy but can’t help smiling. Because in those moments, I’m reminded how lucky i am to be the reason behind that smile.", created: new Date ("2025-09-18T20:45:54").getTime()},
+  {id: uid(), title:'I Love You When You Laugh Too Hard', body:"You don’t even know how adorable you are when you can’t stop laughing. The way your nose scrunches, your eyes shine, and you try (and fail) to calm down and it makes me laugh too. When you really let go and laugh, it’s the cutest thing, love. You make me forget everything else because all i can focus on is how happy you look in that moment. Your laugh feels like home. it’s the kind of sound that stays in my heart long after it fades. You're pure happiness to me hehe.", created: new Date ("2025-09-18T20:49:11").getTime()},
+  {id: uid(), title:'I Love You When You Miss Me', body:"When you tell me you miss me, it makes me want to run straight into your arms. It makes my heart ache in the best way, because it means i’ve become a part of your world that you don’t want to be without. The thought that you’re out there, thinking of me, makes me feel so deeply loved. Every time you say you miss me, it makes my heart do little flips. I can almost picture you pouting or hugging your pillow, and honestly, it makes me want to teleport to you instantly. You’re way too cute when you miss me hihi. But here’s the thing... i miss you more, my love. I miss your laugh, your voice, everything. And the best part is knowing that we’ll always have that moment of pure happiness when we finally see each other. That’s what makes missing you worth it.", created: new Date ("2025-09-18T21:10:23").getTime()},
+  {id: uid(), title:'I Love You When You Are Sleepy', body:"You’re absolutely the cutest when you’re sleepy. The way you mumble random things, or your little yawns, it makes my heart melt every time. It’s impossible not to smile when i see you like that. But most of all, love, when i see you sleepy, it reminds me of how much i want to take care of you. You deserve rest, peace, and comfort, and i want to be the person who gives you that. There’s something magical about watching your eyes close, knowing you trust me enough to just relax completely. Even in your quietest, drowsiest moments, you’re everything i’ve ever wanted. And i can’t wait for the countless nights where i’ll get to whisper “I love you” as you drift off beside me.", created: new Date ("2025-09-19T08:10:12").getTime()},
+  {id: uid(), title:'I Love You When You Don’t Even Notice How Cute You Are', body:"It’s so unfair how you can be ridiculously cute without even realizing it. Like when you’re focused on something and make that little face hihi (my fav), or when you yawn, or when you pout without meaning to. I catch myself smiling like an idiot just watching you. You don’t have to try, you don’t have to dress up, you don’t even have to think about it — you’re just you, and that’s more than enough to make me fall for you all over and over and over again. I wish you could see yourself the way i see you, because then you’d realize just how amazing you truly are, love.", created: new Date ("2025-09-19T09:53:09").getTime()},
+  {id: uid(), title:'I Love You When You Look At Me That Way', body:"Sometimes i wonder what’s going on in your head when I’m rambling and you’re just staring at me with that little smile. You probably don’t even notice it, but it makes me lose my train of thought because you’re too distracting. Honestly, how am i supposed to focus when you look at me like that? You have no idea how much i love it though hehe. There are moments when i open up and you just listen — really listen — and it makes me feel seen in a way i haven’t felt before. Your silence is gentle, like you’re holding my words carefully, and that makes being vulnerable so much easier. Because of you, i can say things i didn’t know i could say. Thank you, love, for making the space where i can be real.", created: new Date ("2025-09-19T08:37:47").getTime()},
+  {id: uid(), title:'I Love You When Make Random Faces', body:"Your random faces are dangerous HAHA too funny, too cute, and way too distracting. I never stand a chance when you do them. But i don’t mind. Honestly, love, i hope you never stop. Those little faces you make are more than just silly — they’re tiny pieces of who you are. They remind me that love lives in the smallest, unguarded moments, not just in the big ones. And when you make them, i get to see a side of you the world doesn’t always see.", created: new Date ("2025-09-19T10:16:31").getTime()},
+  {id: uid(), title:'I Love You When You Remind Me That Love Can Be Simple', body:"I always think that love always seemed like something complicated, filled with questions and worries. But you’ve taught me that it’s really about the little things, a look, a laugh, a quiet moment where everything feels right. With you, i’ve learned that love isn’t about trying too hard, it’s about simply being. Sometimes it’s just the way you smile at me after a long day, or how your voice softens when you say my name. It’s in the ordinary that i’ve found the extraordinary with you. With you, love isn’t confusing or heavy. It’s laughter, comfort, and ease. You remind me that sometimes the simplest things are the most beautiful. And in those simple, quiet truths, i’ve found the kind of love i’ve always dreamed of. A love that feels like home.", created: new Date ("2025-09-21T08:48:17").getTime()},
+  {id: uid(), title:'I Love You When You Let me Into Your World', body:"Being invited into your world feels like stepping into a beautiful garden, it is full of colors, moments, and stories that belong only to you. Every time you let me in a little more, i feel like I’ve been given something rare and sacred. It’s in those moments that i realize how deep our love really runs. It’s not easy to let someone see the real, unpolished sides of who we are. But with you, every time you let me in, i feel closer than i ever thought i could to another person. You give me pieces of your past, your present, and even your hopes for the future, and i hold them carefully because i know how much they matter. That trust is something i will never break. Being in your world means i get to witness the small details, the little habits, the way you think, and the quiet moments that others might miss. Those are the things that make me fall deeper in love with you.", created: new Date ("2025-09-21T09:17:52").getTime()},
+  {id: uid(), title:'I Love You When You Remind Me Of Forever', body:"Sometimes i catch myself smiling at the thought of everything that’s still ahead of us, the trips, the lazy Sundays, the celebrations we haven’t planned yet. Imagining those moments makes me hopeful, because they’re the kind of future that feels warm and true. It’s the small promises we make now that turn into the life we’ll look back on with pride and love. When i think about us, i picture a long road of ordinary days that somehow feel extraordinary because you’re in them. The way you hold my hand, laugh at the same little things, and promise to stay makes me believe in all the quiet, steady kinds of forever. I love imagining mornings and late nights with you, the simple routine that turns into a lifetime. Knowing we’re building something together gives me a calm i’ve never known before. I want to be the one who stands with you through changes, who learns and grows and keeps dreaming by your side. Whatever comes next, i know we’ll shape it together, honest and steady. I’m excited for the years that will teach us new things about each other and give us new reasons to laugh. Being with you makes every plan worth believing in. I want to keep making memories with you, small and big, until they stitch into the life we dreamed of. I promise to choose you on hard days and easy ones, to cheer for your wins and to be the shoulder for your worries. With every plan we whisper and every silly inside joke we keep, my certainty grows that this is the real thing. Thank you for being the person i want beside me for all the tomorrows.", created: new Date ("2025-09-21T09:33:13").getTime()},
+  {id: uid(), title:'I Love You When You Are Just Being Yourself', body:"The world may ask us to change or hide parts of ourselves, but with me, you never have to. I’ll always love you just the way you are. You don’t need to change a single thing for me, lovee. Being yourself is more than enough, love, it’s everything. The moments i cherish most aren’t when you’re trying to impress me or do something big, it’s when you’re just being you. The real you, the one who laughs freely, talks honestly, and isn’t afraid to be a little silly. You don’t have to prove anything to me. You don’t have to be stronger, prettier, funnier, or smarter than you already are. The way you exist naturally is already everything i could ever ask for. I love you most in those moments when you forget about expectations and just let yourself be, because that’s when i see the truest version of you, and it’s the one i’ll always hold closest to my heart.", created: new Date ("2025-09-22T18:07:43").getTime()},
+  {id: uid(), title:'I Love You Alawys, But Especially When...', body:"There are moments when your presence calms the storm in my head in ways i can’t fully explain. When I’m anxious or unsure, just seeing you beside me gives me the courage to keep going. Your steady voice, your patient listening, and the way you remind me to breathe are gifts i never knew i needed. In those moments, love is not just a feeling but a shelter i can step into. I cherish how you make safety feel ordinary and how you turn uncertainty into something manageable. I don’t take for granted that you choose to stay with me when things get messy or complicated. I promise to be that refuge for you too, someone who holds, protects, and fights beside you. Knowing we have each other makes everything feel possible. I want to give you the same safe place, a love that doesn’t demand, doesn’t judge, and doesn’t fade when things get hard. You never have to pretend with me, not when you’re tired, not when you’re unsure, not when life feels heavy. I’ll be here, steady and patient, holding you in every way i can. You’ll never have to walk through the dark without me. I love you, my ikaw, always. In all ways.", created: new Date ("2025-09-22T18:26:24").getTime()}
+];
 
-    // load / save
     function loadLetters(){
       try{
         const raw = localStorage.getItem(STORAGE_KEY);
         if(!raw) return defaultLetters.slice();
         return JSON.parse(raw);
-      }catch(e){console.warn(e); return defaultLetters.slice();}
+      }catch(e){
+        console.warn("loadLetters error", e);
+        return defaultLetters.slice();
+      }
     }
     function saveLetters(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)) }
 
-    // render
     const grid = document.getElementById('envelopeGrid');
     const preview = document.getElementById('preview');
+    const modal = document.getElementById('modal');
+    const modalBody = document.getElementById('modalBody');
+    const modalTitle = document.getElementById('modalTitle');
+
     let letters = loadLetters();
+    let currentOpenId = null;
 
     function renderGrid(){
       grid.innerHTML = '';
-      if(letters.length===0){ grid.innerHTML = '<div class="placeholder">No letters yet — write the first one!</div>'; return }
+      if(!letters || letters.length === 0){
+        grid.innerHTML = '<div class="placeholder">No letters yet — write the first one!</div>';
+        return;
+      }
+
       letters.slice().reverse().forEach(l => {
-        const el = document.createElement('div'); el.className='envelope'; el.tabIndex=0;
+        const el = document.createElement('div');
+        el.className = 'envelope';
+        el.tabIndex = 0;
         el.innerHTML = `<div class="env-top">${escapeHtml(l.title||'Untitled')}</div><div class="env-sub">${new Date(l.created).toLocaleString()}</div>`;
-        const badge = document.createElement('div'); badge.className='new-badge'; badge.textContent='open'; el.appendChild(badge);
         el.addEventListener('click', ()=>openLetter(l.id));
-        el.addEventListener('keydown', (e)=>{ if(e.key==='Enter') openLetter(l.id) });
+        el.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') openLetter(l.id); });
         grid.appendChild(el);
-      })
+      });
     }
 
     function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
@@ -185,93 +261,157 @@
     function showPreview(letter){
       preview.innerHTML = '';
       const wrap = document.createElement('div');
-      wrap.style.padding='8px';
-      wrap.innerHTML = `<strong style="font-size:15px">${escapeHtml(letter.title)}</strong><div style="height:8px"></div><div style="white-space:pre-wrap; color:#5b3f4a">${escapeHtml(letter.body)}</div>`;
+      wrap.style.padding = '8px';
+      wrap.innerHTML = `<strong style="font-size:15px">${escapeHtml(letter.title)}</strong>
+        <div style="height:8px"></div>
+        <div style="white-space:pre-wrap; font-family:'Caveat', cursive; font-size:18px; color:#5b3f4a">${escapeHtml(letter.body)}</div>`;
       preview.appendChild(wrap);
     }
 
-    function openLetter(id){
-      const letter = letters.find(x=>x.id===id);
-      if(!letter) return;
-      const modal = document.getElementById('modal');
-      document.getElementById('modalTitle').textContent = letter.title || 'Letter';
-      const bodyEl = document.getElementById('modalBody'); bodyEl.textContent='';
-      modal.classList.add('show');
-      typewriter(letter.body, bodyEl, 8, ()=>{ burstHearts(30) });
-      // set share/download handlers
-      document.getElementById('downloadBtn').onclick = ()=>downloadText(letter.title+'.txt', letter.body);
-      document.getElementById('shareBtn').onclick = ()=>{
-        const subj = encodeURIComponent(letter.title || 'A letter for you');
-        const body = encodeURIComponent(letter.body + '\n\n— sent from our little letters app');
-        window.location.href = `mailto:?subject=${subj}&body=${body}`;
+   function openLetter(id){
+  const letter = letters.find(x=>x.id === id);
+  if(!letter) return;
+  currentOpenId = id;
+
+ 
+  showPreview(letter);
+
+  
+  modalTitle.textContent = letter.title || 'Letter';
+  modalBody.innerText = letter.body; 
+  modal.classList.add('show');
+
+  document.getElementById('downloadBtn').onclick = ()=>downloadText((letter.title || 'letter') + '.txt', letter.body);
+
+  document.getElementById('shareBtn').onclick = async () => {
+    try {
+      const last = localStorage.getItem('vletters_last_recipient') || '';
+      const toEmail = prompt('Recipient email (where to send this letter):', last);
+      if(!toEmail) return;
+
+      if(!validateEmail(toEmail)){ 
+        alert('Please enter a valid email address.'); 
+        return; 
       }
+      localStorage.setItem('vletters_last_recipient', toEmail);
+
+      const fromName = prompt('Your name (will appear as sender):', localStorage.getItem('vletters_last_from') || 'You') || 'You';
+      localStorage.setItem('vletters_last_from', fromName);
+
+      const serviceID = "service_9j4f8dx";   
+      const templateID = "template_2i903ug"; 
+
+      const templateParams = {
+        to_email: toEmail,
+        from_name: fromName,
+        title: letter.title || "Letter",
+        name: fromName,
+        time: new Date().toLocaleString(),
+        message: letter.body
+      };
+
+      const resp = await emailjs.send(serviceID, templateID, templateParams);
+      console.log('EmailJS response:', resp);
+      alert('💖 Letter sent successfully!');
+    }catch(err){
+      console.error('Email send error', err);
+      alert('Oops — failed to send. Please check your EmailJS settings and try again.');
+    }
+  };
+}
+   
+    function downloadText(filename, text){
+      const blob = new Blob([text], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.style.display='none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
-    // simple typewriter
-    function typewriter(text, container, speed=12, done){
-      let i=0; container.textContent='';
-      function step(){
-        if(i>text.length-1){ if(done) done(); return; }
-        container.textContent += text[i]==='\n' ? '\n' : text[i];
-        i++; setTimeout(step, speed + Math.random()*speed);
-      }
-      step();
-    }
-
-    // confetti hearts
     const canvas = document.getElementById('confettiCanvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext && canvas.getContext('2d');
     let W=0,H=0, particles=[];
-    function resize(){ W=canvas.width = window.innerWidth; H=canvas.height = window.innerHeight }
+    function resize(){ if(!canvas) return; W=canvas.width = window.innerWidth; H=canvas.height = window.innerHeight; }
     window.addEventListener('resize', resize); resize();
-
     function burstHearts(count){
+      if(!ctx) return;
       for(let i=0;i<count;i++){
-        particles.push({x:Math.random()*W, y:Math.random()*H*0.6, vx:(Math.random()-0.5)*6, vy: -Math.random()*6-2, size:6+Math.random()*10, life:60+Math.random()*40, hue:320+Math.random()*40});
+        particles.push({x:Math.random()*W, y:Math.random()*H*0.6, vx:(Math.random()-0.5)*6, vy:-Math.random()*6-2, size:6+Math.random()*10, life:60+Math.random()*40, hue:320+Math.random()*40});
       }
       if(!running) run();
     }
     let running=false;
-    function run(){ running=true; function loop(){ ctx.clearRect(0,0,W,H); for(let p of particles){ p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life--; drawHeart(p.x,p.y,p.size,p.hue); } particles = particles.filter(p=>p.life>0); if(particles.length>0) requestAnimationFrame(loop); else running=false } loop() }
+    function run(){
+      running=true;
+      function loop(){
+        ctx.clearRect(0,0,W,H);
+        for(let p of particles){ p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.life--; drawHeart(p.x,p.y,p.size,p.hue); }
+        particles = particles.filter(p=>p.life>0);
+        if(particles.length>0) requestAnimationFrame(loop);
+        else running=false;
+      }
+      loop();
+    }
+    function drawHeart(x,y,s,h){
+      if(!ctx) return;
+      ctx.save(); ctx.translate(x,y); ctx.beginPath();
+      const topCurveHeight = s * 0.3;
+      ctx.moveTo(0, topCurveHeight);
+      ctx.bezierCurveTo(0, topCurveHeight - s/2, -s, topCurveHeight - s/2, -s, topCurveHeight);
+      ctx.bezierCurveTo(-s, topCurveHeight + s/1.8, 0, topCurveHeight + s, 0, topCurveHeight + s*1.4);
+      ctx.bezierCurveTo(0, topCurveHeight + s, s, topCurveHeight + s/1.8, s, topCurveHeight);
+      ctx.bezierCurveTo(s, topCurveHeight - s/2, 0, topCurveHeight - s/2, 0, topCurveHeight);
+      ctx.closePath();
+      ctx.fillStyle = `hsl(${h} 100% 68%)`;
+      ctx.fill(); ctx.restore();
+    }
 
-    function drawHeart(x,y,s,h){ ctx.save(); ctx.translate(x,y); ctx.beginPath(); const topCurveHeight = s * 0.3; ctx.moveTo(0, topCurveHeight); ctx.bezierCurveTo(0, topCurveHeight - s/2, -s, topCurveHeight - s/2, -s, topCurveHeight); ctx.bezierCurveTo(-s, topCurveHeight + s/1.8, 0, topCurveHeight + s, 0, topCurveHeight + s*1.4); ctx.bezierCurveTo(0, topCurveHeight + s, s, topCurveHeight + s/1.8, s, topCurveHeight); ctx.bezierCurveTo(s, topCurveHeight - s/2, 0, topCurveHeight - s/2, 0, topCurveHeight); ctx.closePath(); ctx.fillStyle = `hsl(${h}deg 100% 68%)`; ctx.fill(); ctx.restore(); }
-
-    // UI bindings
     document.getElementById('composeBtn').addEventListener('click', ()=>document.getElementById('titleInput').focus());
     document.getElementById('saveBtn').addEventListener('click', ()=>{
       const t = document.getElementById('titleInput').value.trim();
       const b = document.getElementById('bodyInput').value.trim();
-      if(!b){ alert('Write something sweet first 💌'); return }
-      const item = {id:uid(), title:t||'Untitled', body:b, created:Date.now()};
+      if(!b){ alert('Write something sweet first 💌'); return; }
+      const item = { id: uid(), title: t || 'Untitled', body: b, created: Date.now() };
       letters.push(item); saveLetters(letters); renderGrid(); document.getElementById('titleInput').value=''; document.getElementById('bodyInput').value=''; showPreview(item);
       burstHearts(18);
     });
 
     document.getElementById('clearBtn').addEventListener('click', ()=>{
       if(!confirm('Clear all letters from this device? This cannot be undone.')) return;
-      letters = []; saveLetters(letters); renderGrid(); preview.innerHTML='<div class="placeholder">No letters yet — write the first one!</div>';
+      letters = []; saveLetters(letters); renderGrid(); preview.innerHTML = '<div class="placeholder">No letters yet — write the first one!</div>';
     });
 
-    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id==='modal') closeModal() });
+    document.getElementById('modal').addEventListener('click', (e)=>{ if(e.target.id === 'modal') closeModal(); });
     document.getElementById('closeModal').addEventListener('click', closeModal);
-    function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+    function closeModal(){ modal.classList.remove('show'); currentOpenId = null; }
 
-    function downloadText(filename, text){ const blob = new Blob([text], {type:'text/plain'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
-
-    // theme surprise
-    document.getElementById('themeBtn').addEventListener('click', ()=>{
+    document.getElementById('themeBtn').addEventListener('click', ()=> {
       document.body.animate([{filter:'hue-rotate(0deg)'},{filter:'hue-rotate(360deg)'}],{duration:900,iterations:1});
-      document.getElementById('loverName').textContent = prompt('What should the header call your love?', 'Sunshine') || 'My Love';
-    })
+      const name = prompt('What should the header call your love?', localStorage.getItem('vletters_name') || 'My Always') || 'My Love';
+      document.getElementById('loverName').textContent = name;
+      localStorage.setItem('vletters_name', name);
+    });
 
-    // boot
+    const music = document.getElementById('bg-music');
+    const musicToggle = document.getElementById('music-toggle');
+    let isPlaying = false;
+    musicToggle.addEventListener('click', () => {
+      if (isPlaying) { music.pause(); musicToggle.textContent = "🎵 Play Music"; }
+      else { music.play(); musicToggle.textContent = "🔇 Stop Music"; }
+      isPlaying = !isPlaying;
+    });
+
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'n' && !e.metaKey && !e.ctrlKey) document.getElementById('titleInput').focus(); });
+
+    function validateEmail(email){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
+    }
+
     renderGrid();
 
-    // small accessibility: keyboard shortcut N to compose
-    window.addEventListener('keydown', (e)=>{ if(e.key==='n' && !e.metaKey && !e.ctrlKey){ document.getElementById('titleInput').focus() } });
-
-    // expose for debugging
-    window._vletters = {loadLetters, saveLetters, letters};
   </script>
 </body>
 </html>
